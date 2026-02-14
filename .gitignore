@@ -1,0 +1,39 @@
+#Virtual Environment
+venv/
+
+#Documenting Files
+*.docx
+
+#Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+#FastAPI / Uvicorn
+*.log
+
+#Jupyter Notebooks
+.ipynb_checkpoints/
+
+#OS Files
+.DS_Store
+Thumbs.db
+
+#IDE
+.vscode/
+.idea/
+
+#Model files
+*.pt
+*.pth
+*.pkl
+*.joblib
+
+#Streamlit cache
+.streamlit/
+
+#Temporary files
+*.tmp
+
