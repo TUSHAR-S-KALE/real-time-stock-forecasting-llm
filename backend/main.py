@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from backend.services.feature_service import generate_features
 from backend.services.data_service import (
     get_live_price,
     get_historical_data
@@ -37,4 +38,19 @@ def history(ticker: str, period: str = "1mo"):
         "ticker": ticker.upper(),
         "period": period,
         "data": data
+    }
+
+@app.get("/features/{ticker}")
+def features(ticker: str, period: str = "6mo"):
+    df = generate_features(ticker, period)
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="Could not generate features")
+
+    return {
+        "ticker": ticker.upper(),
+        "period": period,
+        "rows": len(df),
+        "columns": list(df.columns),
+        "data_sample": df.tail(5).to_dict(orient="records")
     }
