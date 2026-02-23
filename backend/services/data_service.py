@@ -4,7 +4,7 @@ from datetime import datetime
 
 def get_live_price(ticker: str):
     stock = yf.Ticker(ticker)
-    data = stock.history(period="1d", interval="1m")
+    data = stock.history(period="1d", interval="6m")
 
     if data.empty:
         return None
@@ -17,7 +17,7 @@ def get_live_price(ticker: str):
         "timestamp": datetime.now().isoformat()
     }
 
-def get_historical_data(ticker: str, period: str = "1mo"):
+def get_historical_data(ticker: str, period: str = "6mo"):
     stock = yf.Ticker(ticker)
     data = stock.history(period=period)
 

@@ -1,5 +1,5 @@
 #Virtual Environment
-venv/
+stock_ai_venv/
 
 #Documenting Files
 *.docx

@@ -1,8 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from backend.services.feature_service import generate_features
+from backend.services.model_service import train_model, predict_next_day
 from backend.services.data_service import (
     get_live_price,
     get_historical_data
+)
+from backend.services.evaluation_service import (
+    evaluate_model,
+    backtest_strategy,
+    feature_importance
 )
 
 app = FastAPI(
@@ -10,7 +16,6 @@ app = FastAPI(
     description="Live stock data ingestion using Yahoo Finance",
     version="1.0.0"
 )
-
 
 @app.get("/")
 def root():
@@ -25,7 +30,6 @@ def price(ticker: str):
         raise HTTPException(status_code=404, detail="Ticker not found")
 
     return data
-
 
 @app.get("/history/{ticker}")
 def history(ticker: str, period: str = "1mo"):
@@ -54,3 +58,23 @@ def features(ticker: str, period: str = "6mo"):
         "columns": list(df.columns),
         "data_sample": df.tail(5).to_dict(orient="records")
     }
+
+@app.get("/train/{ticker}")
+def train(ticker: str):
+    return train_model(ticker)
+
+@app.get("/predict/{ticker}")
+def predict(ticker: str):
+    return predict_next_day(ticker)
+
+@app.get("/evaluate/{ticker}")
+def evaluate(ticker: str):
+    return evaluate_model(ticker)
+
+@app.get("/backtest/{ticker}")
+def backtest(ticker: str):
+    return backtest_strategy(ticker)
+
+@app.get("/feature-importance")
+def importance():
+    return feature_importance()

@@ -4,19 +4,21 @@ import pandas_ta as ta
 from backend.services.data_service import get_historical_data
 
 
-def create_lag_features(df: pd.DataFrame, lags: int = 5):
+def create_lag_features(df, lags = 5):
     for lag in range(1, lags + 1):
         df[f"lag_{lag}"] = df["Close"].shift(lag)
     return df
 
 
-def add_technical_indicators(df: pd.DataFrame):
+def add_technical_indicators(df):
 
     # SMA
-    df["SMA_14"] = ta.sma(df["Close"], length=14)
+    df["SMA_20"] = ta.sma(df["Close"], length=20)
+    df["SMA_50"] = ta.sma(df["Close"], length=50)
+    #df["SMA_200"] = ta.sma(df["Close"], length=200)
 
     # EMA
-    df["EMA_14"] = ta.ema(df["Close"], length=14)
+    df["EMA_20"] = ta.ema(df["Close"], length=20)
 
     # RSI
     df["RSI_14"] = ta.rsi(df["Close"], length=14)
@@ -38,13 +40,12 @@ def add_technical_indicators(df: pd.DataFrame):
     return df
 
 
-def add_volatility(df: pd.DataFrame):
-    df["returns"] = df["Close"].pct_change()
+def add_volatility(df):
+    df["returns"] = df["Close"].pct_change()    #calculates fractional change/relative or per unit change
     df["volatility_20"] = df["returns"].rolling(window=20).std()
     return df
 
-
-def generate_features(ticker: str, period: str = "6mo"):
+def generate_features(ticker, period= "6mo"):
     raw_data = get_historical_data(ticker, period)
 
     if raw_data is None:
@@ -58,12 +59,13 @@ def generate_features(ticker: str, period: str = "6mo"):
     df["Date"] = pd.to_datetime(df["Date"])
     df.sort_values("Date", inplace=True)
 
-    # Add features
+    #Adding features
     df = add_technical_indicators(df)
     df = create_lag_features(df, lags=10)
     df = add_volatility(df)
 
-    # Drop NaN rows caused by indicators
+    #Dropping NaN rows caused by indicators
     df.dropna(inplace=True)
 
     return df
+
