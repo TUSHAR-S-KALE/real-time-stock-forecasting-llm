@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 from backend.services.feature_service import generate_features
 
 MODEL_PATH = "backend/models/stock_model.pkl"
@@ -35,29 +35,38 @@ def prepare_data(ticker: str, period: str = "6mo"):
     return X, y
 
 
-def train_model(ticker: str):
-    X, y = prepare_data(ticker)
+def train_model(ticker: str, period: str = "6mo"):
+    X, y = prepare_data(ticker, period)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, shuffle=False
     )
 
     model = RandomForestClassifier(
-        n_estimators=100,
+        n_estimators=200,
+        class_weight="balanced",
         random_state=42
     )
 
     model.fit(X_train, y_train)
 
-    predictions = model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
+    #predictions = model.predict(X_test)
+    probs = model.predict_proba(X_test)[:, 1]
+    y_pred = (probs > 0.55).astype(int)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, zero_division=0)
+    recall = recall_score(y_test, y_pred, zero_division=0)
 
     # Save model
     joblib.dump(model, MODEL_PATH)
 
     return {
-        "message": "Model trained successfully",
-        "accuracy": round(accuracy, 4)
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "actual_distribution": y_test.value_counts().to_dict(),
+        "predicted_distribution": pd.Series(y_pred).value_counts().to_dict()
     }
 
 
@@ -67,12 +76,12 @@ def load_model():
     return joblib.load(MODEL_PATH)
 
 
-def predict_next_day(ticker: str):
+def predict_next_day(ticker: str, period: str = "6mo"):
     model = load_model()
     if model is None:
         return {"error": "Model not trained yet"}
 
-    X, _ = prepare_data(ticker)
+    X, _ = prepare_data(ticker, period)
 
     latest_data = X.tail(1)
 

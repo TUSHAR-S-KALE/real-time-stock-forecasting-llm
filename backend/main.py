@@ -23,7 +23,7 @@ def root():
 
 
 @app.get("/price/{ticker}")
-def price(ticker: str):
+def price(ticker):
     data = get_live_price(ticker)
 
     if data is None:
@@ -31,8 +31,9 @@ def price(ticker: str):
 
     return data
 
+
 @app.get("/history/{ticker}")
-def history(ticker: str, period: str = "1mo"):
+def history(ticker, period = "6mo"):
     data = get_historical_data(ticker, period)
 
     if data is None:
@@ -45,7 +46,7 @@ def history(ticker: str, period: str = "1mo"):
     }
 
 @app.get("/features/{ticker}")
-def features(ticker: str, period: str = "6mo"):
+def features(ticker, period = "6mo"):
     df = generate_features(ticker, period)
 
     if df is None or df.empty:
@@ -60,12 +61,12 @@ def features(ticker: str, period: str = "6mo"):
     }
 
 @app.get("/train/{ticker}")
-def train(ticker: str):
-    return train_model(ticker)
+def train(ticker: str, period = "6mo"):
+    return train_model(ticker, period)
 
 @app.get("/predict/{ticker}")
-def predict(ticker: str):
-    return predict_next_day(ticker)
+def predict(ticker: str, period = "6mo"):
+    return predict_next_day(ticker, period)
 
 @app.get("/evaluate/{ticker}")
 def evaluate(ticker: str):
