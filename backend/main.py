@@ -10,6 +10,7 @@ from backend.services.evaluation_service import (
     backtest_strategy,
     feature_importance
 )
+from backend.services.chatbot_service import ask_llm
 
 app = FastAPI(
     title="Stock AI API",
@@ -79,3 +80,8 @@ def backtest(ticker: str):
 @app.get("/feature-importance")
 def importance():
     return feature_importance()
+
+@app.get("/chat/{ticker}")
+def chat(ticker: str, question: str):
+    answer = ask_llm(ticker, question)
+    return {"response": answer}

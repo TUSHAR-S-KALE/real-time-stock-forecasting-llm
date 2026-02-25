@@ -7,7 +7,7 @@ API_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="Stock AI Dashboard", layout="wide")
 
-st.title("📈 Stock AI Prediction Dashboard")
+st.title("Stock AI Prediction Dashboard")
 
 #Sidebar
 ticker = st.sidebar.text_input("Enter Stock Ticker", "TSLA")
@@ -128,3 +128,31 @@ if backtest_response.status_code == 200:
         col3.metric("Sell Signals", backtest_data["sell_signals"])
     else:
         st.warning(backtest_data["error"])
+
+st.subheader("🤖 AI Financial Chatbot")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
+
+if prompt := st.chat_input("Ask about this stock..."):
+
+    st.session_state.messages.append(
+        {"role": "user", "content": prompt}
+    )
+
+    with st.spinner("Thinking..."):
+        response = requests.get(
+            f"{API_URL}/chat/{ticker}",
+            params={"question": prompt}
+        )
+
+        answer = response.json()["response"]
+
+    st.session_state.messages.append(
+        {"role": "assistant", "content": answer}
+    )
+
+    st.rerun()
