@@ -1,32 +1,48 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime
+from cachetools import TTLCache
+
+#Cache for 5 minutes
+price_cache = TTLCache(maxsize=100, ttl=300)
+history_cache = TTLCache(maxsize=100, ttl=300)
+
 
 def get_live_price(ticker: str):
+    if ticker in price_cache:
+        return price_cache[ticker]
+
     stock = yf.Ticker(ticker)
-    data = stock.history(period="1d", interval="6m")
+    data = stock.history(period="1d")
 
     if data.empty:
         return None
 
-    latest_price = data["Close"].iloc[-1]
+    price = float(data["Close"].iloc[-1])
 
-    return {
-        "ticker": ticker.upper(),
-        "price": round(float(latest_price), 2),
-        "timestamp": datetime.now().isoformat()
+    result = {
+        "ticker": ticker,
+        "price": price
     }
 
-def get_historical_data(ticker: str, period: str = "6mo"):
-    stock = yf.Ticker(ticker)
-    data = stock.history(period=period)
+    price_cache[ticker] = result
+    return result
 
-    if data.empty:
+def get_historical_data(ticker: str, period: str = "6mo"):
+    cache_key = f"{ticker}_{period}"
+
+    if cache_key in history_cache:
+        return history_cache[cache_key]
+
+    stock = yf.Ticker(ticker)
+    df = stock.history(period=period)
+
+    if df.empty:
         return None
 
-    data.reset_index(inplace=True)
+    df.reset_index(inplace=True)
+    df["Date"] = df["Date"].astype(str)
 
-    result = data[["Date", "Open", "High", "Low", "Close", "Volume"]]
+    result = df.to_dict(orient="records")
 
-    return result.to_dict(orient="records")
-
+    history_cache[cache_key] = result
+    return result
