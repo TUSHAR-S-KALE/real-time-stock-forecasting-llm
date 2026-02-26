@@ -157,10 +157,11 @@ with tab2:
         col4.metric("F1 Score", eval_data["f1_score"])
 
         st.write("Confusion Matrix")
-        st.dataframe(pd.DataFrame(eval_data["confusion_matrix"],
-                                  index=["Actual Down", "Actual Up"],
-                                  columns=["Predicted Down", "Predicted Up"]
-                                  ))
+        cm_df = pd.DataFrame.from_dict(
+            eval_data["confusion_matrix"],
+            orient="index"
+        )
+        st.dataframe(cm_df)
     else:
         st.warning(eval_data["error"])
 

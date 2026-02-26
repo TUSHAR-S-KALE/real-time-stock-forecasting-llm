@@ -29,7 +29,10 @@ def evaluate_model(ticker: str):
         "precision": round(precision_score(y_test, predictions), 4),
         "recall": round(recall_score(y_test, predictions), 4),
         "f1_score": round(f1_score(y_test, predictions), 4),
-        "confusion_matrix": confusion_matrix(y_test, predictions).tolist()
+        "confusion_matrix": pd.DataFrame(
+            confusion_matrix(y_test, predictions).tolist(), 
+            index=["Actual Down", "Actual Up"],
+            columns=["Predicted Down", "Predicted Up"]).to_dict(orient="index")
     }
 
     return metrics
