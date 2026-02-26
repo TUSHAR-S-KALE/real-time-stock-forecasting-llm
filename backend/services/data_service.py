@@ -7,7 +7,7 @@ price_cache = TTLCache(maxsize=100, ttl=300)
 history_cache = TTLCache(maxsize=100, ttl=300)
 
 
-def get_live_price(ticker: str):
+def get_live_price(ticker):
     if ticker in price_cache:
         return price_cache[ticker]
 
@@ -27,7 +27,7 @@ def get_live_price(ticker: str):
     price_cache[ticker] = result
     return result
 
-def get_historical_data(ticker: str, period: str = "6mo"):
+def get_historical_data(ticker, period = "6mo"):
     cache_key = f"{ticker}_{period}"
 
     if cache_key in history_cache:

@@ -9,10 +9,10 @@ from backend.services.feature_service import generate_features
 MODEL_PATH = "backend/models/stock_model.pkl"
 
 
-def prepare_data(ticker: str, period: str = "6mo"):
+def prepare_data(ticker, period = "6mo"):
     df = generate_features(ticker, period)
 
-    # Create Target: 1 if next day close > today close else 0
+    #Creating Target: 1 if next day close > today close else 0
     df["Target"] = (df["Close"].shift(-1) > df["Close"]).astype(int)
 
     df = df.dropna()
@@ -35,7 +35,7 @@ def prepare_data(ticker: str, period: str = "6mo"):
     return X, y
 
 
-def train_model(ticker: str, period: str = "6mo"):
+def train_model(ticker, period = "6mo"):
     X, y = prepare_data(ticker, period)
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -76,7 +76,7 @@ def load_model():
     return joblib.load(MODEL_PATH)
 
 
-def predict_next_day(ticker: str, period: str = "6mo"):
+def predict_next_day(ticker, period = "6mo"):
     model = load_model()
     if model is None:
         return {"error": "Model not trained yet"}

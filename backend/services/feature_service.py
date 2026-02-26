@@ -11,25 +11,24 @@ def create_lag_features(df, lags = 5):
 
 
 def add_technical_indicators(df):
-
-    # SMA
+    #SMA
     df["SMA_20"] = ta.sma(df["Close"], length=20)
     df["SMA_50"] = ta.sma(df["Close"], length=50)
     #df["SMA_200"] = ta.sma(df["Close"], length=200)
 
-    # EMA
+    #EMA
     df["EMA_20"] = ta.ema(df["Close"], length=20)
 
-    # RSI
+    #RSI
     df["RSI_14"] = ta.rsi(df["Close"], length=14)
 
-    # MACD
+    #MACD
     macd = ta.macd(df["Close"])
     if macd is not None:
         df["MACD"] = macd.iloc[:, 0]
         df["MACD_signal"] = macd.iloc[:, 1]
 
-    # Bollinger Bands (SAFE VERSION)
+    #Bollinger Bands (SAFE VERSION)
     bbands = ta.bbands(df["Close"], length=20)
 
     if bbands is not None:

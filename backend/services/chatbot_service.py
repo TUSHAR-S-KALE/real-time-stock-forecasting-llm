@@ -3,7 +3,7 @@ import ollama
 
 API_URL = "http://127.0.0.1:8000"
 
-def get_stock_context(ticker: str):
+def get_stock_context(ticker):
     context = {}
 
     price_res = requests.get(f"{API_URL}/price/{ticker}")
@@ -20,7 +20,7 @@ def get_stock_context(ticker: str):
 
     return context
 
-def stream_llm_response(ticker: str, user_question: str):
+def llm_response(ticker, user_question):
 
     context = get_stock_context(ticker)
 

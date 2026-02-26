@@ -11,10 +11,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# ---------------------------
-# Helper Functions
-# ---------------------------
-
+#Helper Functions
 @st.cache_data(ttl=300)
 def fetch_history(ticker):
     response = requests.get(f"{API_URL}/history/{ticker}")
@@ -22,22 +19,17 @@ def fetch_history(ticker):
         return response.json()
     return None
 
-
 def fetch_prediction(ticker):
     return requests.get(f"{API_URL}/predict/{ticker}").json()
-
 
 def fetch_evaluation(ticker):
     return requests.get(f"{API_URL}/evaluate/{ticker}").json()
 
-
 def fetch_backtest(ticker):
     return requests.get(f"{API_URL}/backtest/{ticker}").json()
 
-
 def fetch_importance():
     return requests.get(f"{API_URL}/feature-importance").json()
-
 
 def stream_text(text, delay=0.015):
     placeholder = st.empty()
@@ -48,11 +40,7 @@ def stream_text(text, delay=0.015):
         time.sleep(delay)
     return full_text
 
-
-# ---------------------------
-# Sidebar Controls
-# ---------------------------
-
+#Sidebar Controls
 st.sidebar.title("Controls")
 ticker = st.sidebar.text_input("Enter Stock Ticker", "TSLA")
 
@@ -61,28 +49,20 @@ if st.sidebar.button("Train Model"):
         response = requests.get(f"{API_URL}/train/{ticker}")
         st.sidebar.success(response.json())
 
-# ---------------------------
-# Main Title
-# ---------------------------
-
+#Main Title
 st.title("Stock AI Platform")
 st.markdown("Machine Learning + LLM Powered Financial System")
 
-# ---------------------------
-# Tabs
-# ---------------------------
-
+#Tabs
 tab1, tab2, tab3 = st.tabs([
     "Dashboard",
     "AI Prediction",
     "AI Financial Chatbot"
 ])
 
-# TAB 1 — DASHBOARD
+#TAB 1 — DASHBOARD
 with tab1:
-
     st.subheader("Live Stock Chart")
-
     data = fetch_history(ticker)
 
     if data:
@@ -113,7 +93,7 @@ with tab1:
     else:
         st.warning("No historical data available.")
 
-    # Live price
+    #Live price
     st.subheader("Live Price")
 
     price_res = requests.get(f"{API_URL}/price/{ticker}")
@@ -124,10 +104,8 @@ with tab1:
         else:
             st.warning(price_data["error"])
 
-
 #TAB 2 — AI PREDICTION
 with tab2:
-
     st.subheader("Next Day Prediction")
 
     with st.spinner("Generating prediction..."):
@@ -197,13 +175,11 @@ with tab2:
 
 #TAB 3 (AI FINANCIAL CHATBOT)
 with tab3:
-
     st.subheader("Chat with AI Financial Assistant")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # -------- Scrollable Chat Container --------
     chat_container = st.container(height=500, border=True)
 
     with chat_container:
@@ -211,17 +187,16 @@ with tab3:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-    # -------- Fixed Input (Outside Container) --------
     prompt = st.chat_input("Ask about this stock...")
 
     if prompt:
 
-        # Add user message
+        #User message
         st.session_state.messages.append(
             {"role": "user", "content": prompt}
         )
 
-        # Stream assistant response
+        #Assistant response
         full_response = ""
 
         with chat_container:
@@ -240,7 +215,7 @@ with tab3:
                         full_response += text
                         message_placeholder.markdown(full_response)
 
-        # Save assistant response
+        #Saving assistant response
         st.session_state.messages.append(
             {"role": "assistant", "content": full_response}
         )

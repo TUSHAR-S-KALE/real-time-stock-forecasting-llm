@@ -18,7 +18,7 @@ from backend.services.evaluation_service import (
     backtest_strategy,
     feature_importance
 )
-from backend.services.chatbot_service import stream_llm_response
+from backend.services.chatbot_service import llm_response
 
 #App Initialization
 app = FastAPI(
@@ -53,7 +53,7 @@ def root():
         ]
     }
 
-# Live Data Endpoints
+#Live Data Endpoints
 @app.get("/price/{ticker}")
 def price(ticker: str):
     logger.info(f"Live price requested for {ticker}")
@@ -100,14 +100,14 @@ def importance():
     logger.info("Feature importance requested")
     return feature_importance()
 
-# LLM Chat Endpoint
+#LLM Chat Endpoint
 @app.get("/chat/{ticker}")
 def chat(ticker: str, question: str = Query(..., description="User question for chatbot")):
     logger.info(f"Chat request for {ticker}: {question}")
-    generator = stream_llm_response(ticker, question)
+    generator = llm_response(ticker, question)
     return StreamingResponse(generator, media_type="text/plain")
 
-# Global Error Handler
+#Global Error Handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled error: {exc}")

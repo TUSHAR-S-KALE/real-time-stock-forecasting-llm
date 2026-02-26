@@ -10,7 +10,7 @@ from sklearn.metrics import (
 from backend.services.model_service import prepare_data, load_model
 
 
-def evaluate_model(ticker: str):
+def evaluate_model(ticker):
     model = load_model()
     if model is None:
         return {"error": "Train model first."}
@@ -38,7 +38,7 @@ def evaluate_model(ticker: str):
     return metrics
 
 
-def backtest_strategy(ticker: str):
+def backtest_strategy(ticker):
     model = load_model()
     if model is None:
         return {"error": "Train model first."}
