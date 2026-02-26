@@ -14,22 +14,27 @@ A full-stack AI-powered stock analysis platform that combines:
 ## 🚀 Demo Overview
 
 ### 📊 Dashboard
-![Dashboard](assets/dashboard.png)
+![Dashboard](assets/Dashboard.png)
 
 ---
 
 ### 🔮 AI Prediction
-![Prediction](assets/prediction.png)
+![Prediction](assets/Prediction.png)
 
 ---
 
 ### 📈 Model Evaluation (Confusion Matrix + Metrics)
-![Evaluation](assets/evaluation.png)
+![Evaluation](assets/Evaluation.png)
+
+---
+
+### 📈 Backtest Results
+![Evaluation](assets/Backtesting.png)
 
 ---
 
 ### 🤖 Financial Chatbot (Streaming)
-![Chatbot](assets/chatbot.png)
+![Chatbot](assets/Chatbot.png)
 
 ---
 
@@ -56,7 +61,7 @@ flowchart TD
 
     C -->|JSON Response| B
     B --> A
-    
+
 ```
 
 ---
